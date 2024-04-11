@@ -19,8 +19,8 @@ class Game():
         self.display_surf = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         self.basic_font = pg.font.SysFont('arial', 20)
         self.big_font = pg.font.SysFont('verdana', 45)
-        pg.display.set_caption('Тетрис Lite')
-        self.showText('Тетрис Lite')
+        pg.display.set_caption('Проект "Тетрис"')
+        self.showText('Проект "Тетрис"')
 
     def pauseScreen(self):
         pause = pg.Surface((WINDOW_HEIGHT, WINDOW_WIDTH), pg.SRCALPHA)
