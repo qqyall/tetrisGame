@@ -3,14 +3,12 @@ import sys
 import time
 
 import pygame as pg
+from colors import (bg_color, brd_color, colors, info_color, lightcolors,
+                    title_color, txt_color)
+from config import (BLOCK, CUP_HEIGTH, CUP_WIDTH, DOWN_FREQ, FPS, SIDE_FREQ,
+                    WINDOW_HEIGHT, WINDOW_WIDTH, side_margin, top_margin)
+from figures import empty, fig_h, fig_w, figures
 from pygame import locals
-
-from figures import fig_w, fig_h, empty, figures
-from config import (FPS, WINDOW_HEIGHT, WINDOW_WIDTH,
-                    CUP_HEIGTH, CUP_WIDTH, BLOCK, SIDE_FREQ,
-                    DOWN_FREQ, side_margin, top_margin)
-from colors import (colors, lightcolors, brd_color, bg_color,
-                    txt_color, title_color, info_color)
 
 
 class Game():
@@ -116,9 +114,12 @@ class Game():
                 fallingFig['y'] += 1
                 last_move_down = time.time()
 
-            if time.time() - last_fall > fall_speed:  # свободное падение фигуры            
-                if not self.checkPos(cup, fallingFig, adjY=1):  # проверка "приземления" фигуры
-                    self.addToCup(cup, fallingFig)  # фигура приземлилась, добавляем ее в содержимое стакана
+            # свободное падение фигуры 
+            if time.time() - last_fall > fall_speed:
+                # проверка "приземления" фигуры
+                if not self.checkPos(cup, fallingFig, adjY=1):
+                    # фигура приземлилась, добавляем ее в содержимое стакана
+                    self.addToCup(cup, fallingFig)
                     points += self.clearCompleted(cup)
                     level, fall_speed = self.calcSpeed(points)
                     fallingFig = None
@@ -167,7 +168,8 @@ class Game():
 
     @staticmethod
     def quitGame():
-        for event in pg.event.get(locals.QUIT):  # проверка всех событий, приводящих к выходу из игры
+        # проверка всех событий, приводящих к выходу из игры
+        for event in pg.event.get(locals.QUIT):
             pg.quit()
             sys.exit()
         for event in pg.event.get(locals.KEYUP):
