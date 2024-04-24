@@ -6,7 +6,7 @@ def main():
         game = Game()
         game.runTetris()
         game.pauseScreen()
-        game.showText('Игра закончена')
+        game.endGameScreen()
         del game
 
 

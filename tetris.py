@@ -21,9 +21,41 @@ class Game():
         self.big_font = pg.font.SysFont('verdana', 45)
         pg.display.set_caption('Проект "Тетрис"')
         self.showText('Проект "Тетрис"')
+        self.points = 0
+        self.level, self.fall_speed = self.calcSpeed()
+
+    def endGameScreen(self):
+        endgame = pg.Surface((WINDOW_HEIGHT + 100, WINDOW_WIDTH), pg.SRCALPHA)
+        endgame.fill((0, 0, 0, 255))
+        self.display_surf.blit(endgame, (0, 0))
+
+        text = f'Игра закончена!'
+        titleSurf, titleRect = self.txtObjects(text, self.big_font, title_color)
+        titleRect.center = (int(WINDOW_WIDTH / 2) - 3, int(WINDOW_HEIGHT / 2) - 103)
+        self.display_surf.blit(titleSurf, titleRect)
+
+        text = f'Набрано очков: {self.points}'
+        titleSurf, titleRect = self.txtObjects(text, self.big_font, title_color)
+        titleRect.center = (int(WINDOW_WIDTH / 2) - 3, int(WINDOW_HEIGHT / 2) - 33)
+        self.display_surf.blit(titleSurf, titleRect)
+
+        text = f' Достигнут уровень {self.level}'
+        titleSurf, titleRect = self.txtObjects(text, self.big_font, title_color)
+        titleRect.center = (int(WINDOW_WIDTH / 2) - 3, int(WINDOW_HEIGHT / 2) + 43)
+        self.display_surf.blit(titleSurf, titleRect)
+
+
+        pressKeySurf, pressKeyRect = self.txtObjects('Нажмите любую клавишу для продолжения', self.basic_font, title_color)
+        pressKeyRect.center = (int(WINDOW_WIDTH / 2), int(WINDOW_HEIGHT / 2) + 200)
+        self.display_surf.blit(pressKeySurf, pressKeyRect)
+
+        while self.checkKeys() is None:
+            pg.display.update()
+            self.fps_clock.tick()
+
 
     def pauseScreen(self):
-        pause = pg.Surface((WINDOW_HEIGHT, WINDOW_WIDTH), pg.SRCALPHA)
+        pause = pg.Surface((WINDOW_HEIGHT + 100, WINDOW_WIDTH), pg.SRCALPHA)
         pause.fill((0, 0, 255, 127))
         self.display_surf.blit(pause, (0, 0))
 
@@ -35,8 +67,6 @@ class Game():
         going_down = False
         going_left = False
         going_right = False
-        points = 0
-        level, fall_speed = self.calcSpeed(points)
         fallingFig = self.getNewFigure()
         nextFig = self.getNewFigure()
 
@@ -115,13 +145,13 @@ class Game():
                 last_move_down = time.time()
 
             # свободное падение фигуры 
-            if time.time() - last_fall > fall_speed:
+            if time.time() - last_fall > self.fall_speed:
                 # проверка "приземления" фигуры
                 if not self.checkPos(cup, fallingFig, adjY=1):
                     # фигура приземлилась, добавляем ее в содержимое стакана
                     self.addToCup(cup, fallingFig)
-                    points += self.clearCompleted(cup)
-                    level, fall_speed = self.calcSpeed(points)
+                    self.points += self.clearCompleted(cup)
+                    self.level, self.fall_speed = self.calcSpeed()
                     fallingFig = None
                 else:
                     # фигура пока не приземлилась, продолжаем движение вниз
@@ -132,7 +162,7 @@ class Game():
             self.display_surf.fill(bg_color)
             self.drawTitle()
             self.gamecup(cup)
-            self.drawInfo(points, level)
+            self.drawInfo()
             self.drawnextFig(nextFig)
             if fallingFig is not None:
                 self.drawFig(fallingFig)
@@ -178,10 +208,9 @@ class Game():
                 sys.exit()
             pg.event.post(event)
 
-    @staticmethod
-    def calcSpeed(points):
+    def calcSpeed(self):
         # вычисляет уровень
-        level = int(points / 10) + 1
+        level = int(self.points / 10) + 1
         fall_speed = 0.27 - (level * 0.02)
         return level, fall_speed
 
@@ -286,13 +315,13 @@ class Game():
         titleRect.topleft = (WINDOW_WIDTH - 425, 30)
         self.display_surf.blit(titleSurf, titleRect)
 
-    def drawInfo(self, points, level):
-        pointsSurf = self.basic_font.render(f'Баллы: {points}', True, txt_color)
+    def drawInfo(self):
+        pointsSurf = self.basic_font.render(f'Баллы: {self.points}', True, txt_color)
         pointsRect = pointsSurf.get_rect()
         pointsRect.topleft = (WINDOW_WIDTH - 550, 180)
         self.display_surf.blit(pointsSurf, pointsRect)
 
-        levelSurf = self.basic_font.render(f'Уровень: {level}', True, txt_color)
+        levelSurf = self.basic_font.render(f'Уровень: {self.level}', True, txt_color)
         levelRect = levelSurf.get_rect()
         levelRect.topleft = (WINDOW_WIDTH - 550, 250)
         self.display_surf.blit(levelSurf, levelRect)
